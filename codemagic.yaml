@@ -37,7 +37,7 @@ definitions:
   - &initialize_environment
     name: Initialize Environment
     script: |
-      git clone git@github.com:infostrategytech/mobile-gitops.git
+      git clone git@github.com:zubisofts/flutter_ci_test.git
       flutter clean; flutter pub get; dart run build_runner build --delete-conflicting-outputs; export FLUTTER_BUILD_DIR=build  
 
   #****************************** END Flutter/Module Specific Configurations *************************

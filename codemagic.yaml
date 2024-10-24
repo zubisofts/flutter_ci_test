@@ -54,16 +54,16 @@ definitions:
         - flutter_drive.log
 
   #*********************************END OF ANDROID Specific Configurations****************************
-  - ios_artifacts_config: &ios_artifacts_config
-      artifacts:
-        - build/ios/ipa/*.ipa
-        - /tmp/xcodebuild_logs/*.log
-        - build/windows/**/*.msix
-        - flutter_drive.log
-  - app_store_connect_config: &app_store_connect_config
-      auth: integration
-  - ios_integrations: &ios_integrations
-      app_store_connect: Irecharge
+#  - ios_artifacts_config: &ios_artifacts_config
+#      artifacts:
+#        - build/ios/ipa/*.ipa
+#        - /tmp/xcodebuild_logs/*.log
+#        - build/windows/**/*.msix
+#        - flutter_drive.log
+#  - app_store_connect_config: &app_store_connect_config
+#      auth: integration
+#  - ios_integrations: &ios_integrations
+#      app_store_connect: Irecharge
 
 
 #==================================All Workflows goes below=========================================
@@ -89,8 +89,8 @@ workflows:
   irecharge_mobile_dev_workflow:
     name: Irecharge DEV Workflow
     max_build_duration: 30
-    integrations:
-      <<: *ios_integrations
+#    integrations:
+#      <<: *ios_integrations
     environment:
       ios_signing:
         distribution_type: app_store
@@ -110,15 +110,15 @@ workflows:
     publishing:
       email:
         <<: *build_email_recipients_config
-      app_store_connect:
-        <<: *app_store_connect_config
-        submit_to_testflight: false
+#      app_store_connect:
+#        <<: *app_store_connect_config
+#        submit_to_testflight: false
 
   irecharge_mobile_staging_workflow:
     name: Irecharge STAGING Workflow
     max_build_duration: 30
-    integrations:
-      <<: *ios_integrations
+#    integrations:
+#      <<: *ios_integrations
     environment:
       ios_signing:
         distribution_type: app_store
@@ -138,15 +138,15 @@ workflows:
       email:
         <<: *build_staging_email_recipient_config
       app_store_connect:
-        <<: *app_store_connect_config
-        submit_to_testflight: false
+#        <<: *app_store_connect_config
+#        submit_to_testflight: false
 
   ## Disabled Tag triggers for now to avoid recursive triggers
   irecharge_mobile_prod_workflow:
     name: Irecharge Global PROD Workflow
     max_build_duration: 30
     integrations:
-      <<: *ios_integrations
+#      <<: *ios_integrations
     environment:
       ios_signing:
         distribution_type: app_store
@@ -169,6 +169,6 @@ workflows:
             dart run mobile-gitops/.scripts/deployment.dart tag --env=prod --gitops-ref=$GITOPS_REF
       email:
         <<: *build_email_recipients_config
-      app_store_connect:
-        <<: *app_store_connect_config
-        submit_to_testflight: true
+#      app_store_connect:
+#        <<: *app_store_connect_config
+#        submit_to_testflight: true

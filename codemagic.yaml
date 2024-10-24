@@ -132,7 +132,7 @@ workflows:
       <<: *ios_environment_config
     scripts:
       - *initialize_environment
-      - dart run mobile-gitops/.scripts/deployment.dart build --env=staging --build-type=composite -i 6670788935 --locale=Accelerate --gitops-ref=$GITOPS_REF
+      - dart run mobile-gitops/scripts/deployment.dart build --env=staging --build-type=composite -i 6670788935 --locale=Accelerate --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config
     publishing:
       email:
@@ -160,13 +160,13 @@ workflows:
       <<: *ios_environment_config
     scripts:
       - *initialize_environment
-      - dart run mobile-gitops/.scripts/deployment.dart build --env=prod --build-type=composite -i $PROD_APP_ID --gitops-ref=$GITOPS_REF
+      - dart run mobile-gitops/scripts/deployment.dart build --env=prod --build-type=composite -i $PROD_APP_ID --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config
     publishing:
       scripts:
         - name: 'Tagging'
           script: |
-            dart run mobile-gitops/.scripts/deployment.dart tag --env=prod --gitops-ref=$GITOPS_REF
+            dart run mobile-gitops/scripts/deployment.dart tag --env=prod --gitops-ref=$GITOPS_REF
       email:
         <<: *build_email_recipients_config
 #      app_store_connect:

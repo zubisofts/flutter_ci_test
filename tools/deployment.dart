@@ -387,7 +387,7 @@ Future<Map<String, dynamic>> fetchJsonFile(
   print('<====== Fetching $fileType from gitOps =====>');
   final filePath = '${environment.name}/$locale/$fileType.json';
   final urlPath =
-      '$gitOpsApiUrl/contents/${Uri.encodeQueryComponent(filePath)}?ref=$ref';
+      '$gitOpsApiUrl/contents/$filePath?ref=$ref';
   print('GitOps URL : $urlPath');
   final response = await http.get(Uri.parse(urlPath), headers: {
     'Authorization': githubToken,

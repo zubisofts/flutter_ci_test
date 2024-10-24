@@ -37,6 +37,11 @@ definitions:
   - &initialize_environment
     name: Initialize Environment
     script: |
+      #!/usr/bin/env bash
+        echo "${CUSTOM_KEY_NAME}" > /tmp/ssh_key
+        chmod 600 /tmp/ssh_key
+        eval `ssh-agent -s`
+        ssh-add /tmp/ssh_key
       git clone git@github.com:zubisofts/flutter_ci_test.git
       flutter clean; flutter pub get; dart run build_runner build --delete-conflicting-outputs; export FLUTTER_BUILD_DIR=build  
 
@@ -98,8 +103,6 @@ workflows:
 #      ios_signing:
 #        distribution_type: app_store
 #        bundle_identifier: com.flutterci.flutter_ci_test
-      vars:
-        SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
       android_signing:
         - android_keystore_reference
       groups:

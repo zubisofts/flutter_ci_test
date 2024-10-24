@@ -37,12 +37,12 @@ definitions:
   - &initialize_environment
     name: Initialize Environment
     script: |
-      #!/usr/bin/env bash
-        echo "${MODULE_SSH_KEY}" > /tmp/ssh_key
-        chmod 600 /tmp/ssh_key
-        eval `ssh-agent -s`
-        ssh-add /tmp/ssh_key
-        git clone git@github.com:infostrategytech/mobile-gitops.git
+#      #!/usr/bin/env bash
+#        echo "${MODULE_SSH_KEY}" > /tmp/ssh_key
+#        chmod 600 /tmp/ssh_key
+#        eval `ssh-agent -s`
+#        ssh-add /tmp/ssh_key
+#        git clone git@github.com:infostrategytech/mobile-gitops.git
         flutter clean; flutter pub get; dart run build_runner build --delete-conflicting-outputs; export FLUTTER_BUILD_DIR=build  
 
   #****************************** END Flutter/Module Specific Configurations *************************

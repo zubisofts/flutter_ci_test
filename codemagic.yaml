@@ -7,9 +7,9 @@ definitions:
         - zubitex40@gmail.com
   - ios_environment_config: &ios_environment_config
       vars:
-        PROD_APP_ID: 1661134941
-        STG_APP_ID: 6450463266
-        DEV_APP_ID: 6572304638
+        PROD_APP_ID: 123
+        STG_APP_ID: 123
+        DEV_APP_ID: 123
       xcode: 15.2
       cocoapods: 1.14.2
 

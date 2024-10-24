@@ -92,9 +92,9 @@ workflows:
 #    integrations:
 #      <<: *ios_integrations
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.flutterci.flutter_ci_test
+#      ios_signing:
+#        distribution_type: app_store
+#        bundle_identifier: com.flutterci.flutter_ci_test
       android_signing:
         - android_keystore_reference
       groups:
@@ -120,9 +120,9 @@ workflows:
 #    integrations:
 #      <<: *ios_integrations
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.flutterci.flutter_ci_test.staging
+#      ios_signing:
+#        distribution_type: app_store
+#        bundle_identifier: com.flutterci.flutter_ci_test.staging
       android_signing:
         - android_keystore_reference
       groups:
@@ -148,9 +148,9 @@ workflows:
 #    integrations:
 #      <<: *ios_integrations
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.flutterci.flutter_ci_test
+#      ios_signing:
+#        distribution_type: app_store
+#        bundle_identifier: com.flutterci.flutter_ci_test
       android_signing:
         - android_keystore_reference_2
       groups:

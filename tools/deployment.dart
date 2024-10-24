@@ -15,7 +15,7 @@ abstract class DeploymentTask {
 }
 
 const gitOpsApiUrl = 'https://api.github.com/repos/infostrategytech/mobile-gitops';
-const githubToken = 'Bearer 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';
+const githubToken = 'Bearer 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';
 const dependenciesKey = 'dependencies';
 const dependenciesOverrideKey = 'dependency_overrides';
 const envKey = 'env';

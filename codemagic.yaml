@@ -1,0 +1,174 @@
+definitions:
+  - build_email_recipients_config: &build_email_recipients_config
+      recipients:
+        - zubitex40@gmail.com
+  - build_staging_email_recipient_config: &build_staging_email_recipient_config
+      recipients:
+        - zubitex40@gmail.com
+  - ios_environment_config: &ios_environment_config
+      vars:
+        PROD_APP_ID: 1661134941
+        STG_APP_ID: 6450463266
+        DEV_APP_ID: 6572304638
+      xcode: 15.2
+      cocoapods: 1.14.2
+
+  - flutter_version_config: &flutter_version_config
+      flutter: 3.24.3
+      java: 17
+  - feature_trigger_config: &feature_trigger_config
+      events:
+        - push
+      branch_patterns:
+        - pattern: "*"
+          include: false
+        - pattern: main
+          include: false
+      cancel_previous_builds: true
+  - versioning_trigger_config: &versioning_trigger_config
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+      cancel_previous_builds: true
+
+  #==============================Flutter/Module Specific Configurations===============================
+  - &initialize_environment
+    name: Initialize Environment
+    script: |
+      flutter clean; flutter pub get; dart run build_runner build --delete-conflicting-outputs; export FLUTTER_BUILD_DIR=build 
+
+  #****************************** END Flutter/Module Specific Configurations *************************
+
+  #==============================ANDROID Specific Configurations===============================
+  - android_artifacts_config: &android_artifacts_config
+      artifacts:
+        - build/**/outputs/apk/**/*.apk
+        - build/**/outputs/bundle/**/*.aab
+        - build/**/outputs/**/mapping.txt
+        - build/ios/ipa/*.ipa
+        - /tmp/xcodebuild_logs/*.log
+        - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+        - build/windows/**/*.msix
+        - flutter_drive.log
+
+  #*********************************END OF ANDROID Specific Configurations****************************
+  - ios_artifacts_config: &ios_artifacts_config
+      artifacts:
+        - build/ios/ipa/*.ipa
+        - /tmp/xcodebuild_logs/*.log
+        - build/windows/**/*.msix
+        - flutter_drive.log
+  - app_store_connect_config: &app_store_connect_config
+      auth: integration
+  - ios_integrations: &ios_integrations
+      app_store_connect: Irecharge
+
+
+#==================================All Workflows goes below=========================================
+workflows:
+  irecharge_mobile_test_workflow:
+    instance_type: linux
+    name: Irecharge Test Workflow
+    max_build_duration: 10
+    environment:
+      android_signing:
+        - android_keystore_reference
+      groups:
+        - sshgroup
+      <<: *flutter_version_config
+    triggering:
+      <<: *feature_trigger_config
+    scripts:
+      - *initialize_environment
+    publishing:
+      email:
+        <<: *build_email_recipients_config
+
+  irecharge_mobile_dev_workflow:
+    name: Irecharge Global DEV Workflow
+    max_build_duration: 30
+    integrations:
+      <<: *ios_integrations
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.irecharge.mobile.dev
+      android_signing:
+        - android_keystore_reference
+      groups:
+        - sshgroup
+        - module-environment-group
+      <<: *flutter_version_config
+      <<: *ios_environment_config
+    scripts:
+      - *initialize_environment
+      - dart run mobile-gitops/.scripts/deployment.dart build \
+        --env=dev --build-type=composite -i $DEV_APP_ID --locale=global --gitops-ref=$GITOPS_REF
+    <<: *android_artifacts_config
+    publishing:
+      email:
+        <<: *build_email_recipients_config
+      app_store_connect:
+        <<: *app_store_connect_config
+        submit_to_testflight: false
+
+  irecharge_mobile_staging_workflow:
+    name: Irecharge FX STAGING Workflow
+    max_build_duration: 30
+    integrations:
+      <<: *ios_integrations
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.irecharge.mobile.staging
+      android_signing:
+        - android_keystore_reference
+      groups:
+        - sshgroup
+        - module-environment-group
+      <<: *flutter_version_config
+      <<: *ios_environment_config
+    scripts:
+      - *initialize_environment
+      - dart run mobile-gitops/.scripts/deployment.dart build --env=staging --build-type=composite -i 6670788935 --locale=global --gitops-ref=$GITOPS_REF
+    <<: *android_artifacts_config
+    publishing:
+      email:
+        <<: *build_staging_email_recipient_config
+      app_store_connect:
+        <<: *app_store_connect_config
+        submit_to_testflight: false
+
+  ## Disabled Tag triggers for now to avoid recursive triggers
+  irecharge_mobile_prod_workflow:
+    name: Irecharge Global PROD Workflow
+    max_build_duration: 30
+    integrations:
+      <<: *ios_integrations
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.irecharge.mobile
+      android_signing:
+        - android_keystore_reference_2
+      groups:
+        - sshgroup
+        - module-environment-group
+      <<: *flutter_version_config
+      <<: *ios_environment_config
+    scripts:
+      - *initialize_environment
+      - dart run mobile-gitops/.scripts/deployment.dart build --env=prod --build-type=composite -i $PROD_APP_ID --gitops-ref=$GITOPS_REF
+    <<: *android_artifacts_config
+    publishing:
+      scripts:
+        - name: 'Tagging'
+          script: |
+            dart run mobile-gitops/.scripts/deployment.dart tag --env=prod --gitops-ref=$GITOPS_REF
+      email:
+        <<: *build_email_recipients_config
+      app_store_connect:
+        <<: *app_store_connect_config
+        submit_to_testflight: true

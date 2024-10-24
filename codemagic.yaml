@@ -105,7 +105,7 @@ workflows:
     scripts:
       - *initialize_environment
       - dart run mobile-gitops/.scripts/deployment.dart build \
-        --env=dev --build-type=composite -i $DEV_APP_ID --locale=global --gitops-ref=$GITOPS_REF
+        --env=dev --build-type=composite -i $DEV_APP_ID --locale=Accelerate --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config
     publishing:
       email:
@@ -132,7 +132,7 @@ workflows:
       <<: *ios_environment_config
     scripts:
       - *initialize_environment
-      - dart run mobile-gitops/.scripts/deployment.dart build --env=staging --build-type=composite -i 6670788935 --locale=global --gitops-ref=$GITOPS_REF
+      - dart run mobile-gitops/.scripts/deployment.dart build --env=staging --build-type=composite -i 6670788935 --locale=Accelerate --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config
     publishing:
       email:

@@ -37,7 +37,7 @@ definitions:
   - &initialize_environment
     name: Initialize Environment
     script: |
-      flutter clean; flutter pub get; dart run build_runner build --delete-conflicting-outputs; export FLUTTER_BUILD_DIR=build 
+      flutter clean; flutter pub get; export FLUTTER_BUILD_DIR=build 
 
   #****************************** END Flutter/Module Specific Configurations *************************
 
@@ -87,14 +87,14 @@ workflows:
         <<: *build_email_recipients_config
 
   irecharge_mobile_dev_workflow:
-    name: Irecharge Global DEV Workflow
+    name: Irecharge DEV Workflow
     max_build_duration: 30
     integrations:
       <<: *ios_integrations
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.irecharge.mobile.dev
+        bundle_identifier: com.flutterci.flutter_ci_test
       android_signing:
         - android_keystore_reference
       groups:
@@ -115,14 +115,14 @@ workflows:
         submit_to_testflight: false
 
   irecharge_mobile_staging_workflow:
-    name: Irecharge FX STAGING Workflow
+    name: Irecharge STAGING Workflow
     max_build_duration: 30
     integrations:
       <<: *ios_integrations
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.irecharge.mobile.staging
+        bundle_identifier: com.flutterci.flutter_ci_test.staging
       android_signing:
         - android_keystore_reference
       groups:
@@ -150,7 +150,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.irecharge.mobile
+        bundle_identifier: com.flutterci.flutter_ci_test
       android_signing:
         - android_keystore_reference_2
       groups:

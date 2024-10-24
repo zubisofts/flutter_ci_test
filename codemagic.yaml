@@ -42,8 +42,8 @@ definitions:
         chmod 600 /tmp/ssh_key
         eval `ssh-agent -s`
         ssh-add /tmp/ssh_key
-      git clone git@github.com:zubisofts/flutter_ci_test.git
-      flutter clean; flutter pub get; dart run build_runner build --delete-conflicting-outputs; export FLUTTER_BUILD_DIR=build  
+        git clone git@github.com:zubisofts/flutter_ci_test.git
+        flutter clean; flutter pub get; dart run build_runner build --delete-conflicting-outputs; export FLUTTER_BUILD_DIR=build  
 
   #****************************** END Flutter/Module Specific Configurations *************************
 

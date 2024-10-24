@@ -38,7 +38,7 @@ definitions:
     name: Initialize Environment
     script: |
       #!/usr/bin/env bash
-        echo "${CUSTOM_KEY_NAME}" > /tmp/ssh_key
+        echo "${MODULE_SSH_KEY}" > /tmp/ssh_key
         chmod 600 /tmp/ssh_key
         eval `ssh-agent -s`
         ssh-add /tmp/ssh_key

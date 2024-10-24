@@ -100,6 +100,7 @@ workflows:
         - android_keystore_reference
       groups:
         - sshgroup
+        - module-environment-group
       <<: *flutter_version_config
       <<: *ios_environment_config
     scripts:
@@ -127,6 +128,7 @@ workflows:
         - android_keystore_reference
       groups:
         - sshgroup
+        - module-environment-group
       <<: *flutter_version_config
       <<: *ios_environment_config
     scripts:
@@ -154,6 +156,7 @@ workflows:
         - android_keystore_reference_2
       groups:
         - sshgroup
+        - module-environment-group
       <<: *flutter_version_config
       <<: *ios_environment_config
     scripts:

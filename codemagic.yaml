@@ -76,6 +76,8 @@ workflows:
     environment:
       android_signing:
         - android_keystore_reference
+      vars:
+        SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
       groups:
         - sshgroup
       <<: *flutter_version_config
@@ -96,6 +98,8 @@ workflows:
 #      ios_signing:
 #        distribution_type: app_store
 #        bundle_identifier: com.flutterci.flutter_ci_test
+      vars:
+        SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
       android_signing:
         - android_keystore_reference
       groups:
@@ -104,6 +108,13 @@ workflows:
       <<: *flutter_version_config
       <<: *ios_environment_config
     scripts:
+      - name: Setup SSH for GitHub
+        script: |
+          echo "$SSH_PRIVATE_KEY" > /tmp/id_rsa
+          chmod 600 /tmp/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add /tmp/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
       - *initialize_environment
       - dart run mobile-gitops/scripts/deployment.dart build \
         --env=dev --build-type=composite -i $DEV_APP_ID --locale=Accelerate --gitops-ref=$GITOPS_REF
@@ -124,6 +135,8 @@ workflows:
 #      ios_signing:
 #        distribution_type: app_store
 #        bundle_identifier: com.flutterci.flutter_ci_test.staging
+      vars:
+        SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
       android_signing:
         - android_keystore_reference
       groups:
@@ -132,6 +145,13 @@ workflows:
       <<: *flutter_version_config
       <<: *ios_environment_config
     scripts:
+      - name: Setup SSH for GitHub
+        script: |
+          echo "$SSH_PRIVATE_KEY" > /tmp/id_rsa
+          chmod 600 /tmp/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add /tmp/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
       - *initialize_environment
       - dart run mobile-gitops/scripts/deployment.dart build --env=staging --build-type=composite -i 6670788935 --locale=Accelerate --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config
@@ -152,6 +172,8 @@ workflows:
 #      ios_signing:
 #        distribution_type: app_store
 #        bundle_identifier: com.flutterci.flutter_ci_test
+      vars:
+        SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY
       android_signing:
         - android_keystore_reference_2
       groups:
@@ -160,6 +182,13 @@ workflows:
       <<: *flutter_version_config
       <<: *ios_environment_config
     scripts:
+      - name: Setup SSH for GitHub
+        script: |
+          echo "$SSH_PRIVATE_KEY" > /tmp/id_rsa
+          chmod 600 /tmp/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add /tmp/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
       - *initialize_environment
       - dart run mobile-gitops/scripts/deployment.dart build --env=prod --build-type=composite -i $PROD_APP_ID --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config

@@ -143,7 +143,7 @@ workflows:
 
   ## Disabled Tag triggers for now to avoid recursive triggers
   irecharge_mobile_prod_workflow:
-    name: Irecharge Global PROD Workflow
+    name: Irecharge PROD Workflow
     max_build_duration: 30
 #    integrations:
 #      <<: *ios_integrations

@@ -104,7 +104,7 @@ workflows:
       <<: *ios_environment_config
     scripts:
       - *initialize_environment
-      - dart run mobile-gitops/.scripts/deployment.dart build \
+      - dart run mobile-gitops/scripts/deployment.dart build \
         --env=dev --build-type=composite -i $DEV_APP_ID --locale=Accelerate --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config
     publishing:

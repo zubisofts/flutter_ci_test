@@ -37,6 +37,12 @@ definitions:
   - &initialize_environment
     name: Initialize Environment
     script: |
+      #!/usr/bin/env bash
+        echo "${MODULE_SSH_KEY}" > /tmp/ssh_key
+        chmod 600 /tmp/ssh_key
+        eval `ssh-agent -s`
+        ssh-add /tmp/ssh_key
+        git clone git@github.com:infostrategytech/mobile-gitops.git
         flutter clean; flutter pub get; dart run build_runner build --delete-conflicting-outputs; export FLUTTER_BUILD_DIR=build  
 
   #****************************** END Flutter/Module Specific Configurations *************************
@@ -106,7 +112,7 @@ workflows:
       <<: *ios_environment_config
     scripts:
       - *initialize_environment
-      - dart run mobile-gitops/scripts/deployment.dart build \
+      - dart run tools/deployment.dart build \
         --env=dev --build-type=composite -i $DEV_APP_ID --locale=Accelerate --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config
     publishing:
@@ -134,7 +140,7 @@ workflows:
       <<: *ios_environment_config
     scripts:
       - *initialize_environment
-      - dart run mobile-gitops/scripts/deployment.dart build --env=staging --build-type=composite -i 6670788935 --locale=Accelerate --gitops-ref=$GITOPS_REF
+      - dart run tools/deployment.dart build --env=staging --build-type=composite -i 6670788935 --locale=Accelerate --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config
     publishing:
       email:
@@ -162,13 +168,13 @@ workflows:
       <<: *ios_environment_config
     scripts:
       - *initialize_environment
-      - dart run mobile-gitops/scripts/deployment.dart build --env=prod --build-type=composite -i $PROD_APP_ID --gitops-ref=$GITOPS_REF
+      - dart run tools/deployment.dart build --env=prod --build-type=composite -i $PROD_APP_ID --gitops-ref=$GITOPS_REF
     <<: *android_artifacts_config
     publishing:
       scripts:
         - name: 'Tagging'
           script: |
-            dart run mobile-gitops/scripts/deployment.dart tag --env=prod --gitops-ref=$GITOPS_REF
+            dart run tools/deployment.dart tag --env=prod --gitops-ref=$GITOPS_REF
       email:
         <<: *build_email_recipients_config
 #      app_store_connect:

@@ -1,3 +1,20 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import groovy.xml.XmlParser
+
+buildscript {
+    ext.kotlin_version = '1.9.21'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.google.gms:google-services:4.4.0'
+        classpath 'com.android.tools.build:gradle:8.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -5,12 +22,60 @@ allprojects {
     }
 }
 
-rootProject.buildDir = "../build"
+rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
 subprojects {
-    project.evaluationDependsOn(":app")
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    afterEvaluate {
+        // check if android block is available
+
+        if (it.hasProperty('android')) {
+
+            if (it.android.namespace == null) {
+                def manifest = new XmlParser().parse(file(it.android.sourceSets.main.manifest.srcFile))
+                def packageName = manifest.attribute("package").toString()
+                println("Setting ${packageName} as android namespace")
+                android.namespace = packageName
+            }
+
+            def javaVersion = JavaVersion.VERSION_17
+            android {
+                def androidApiVersion = 34
+                compileSdkVersion androidApiVersion
+                defaultConfig {
+                    multiDexEnabled true
+                    targetSdkVersion androidApiVersion
+                }
+                composeOptions {
+                    kotlinCompilerExtensionVersion = "1.5.6"
+                }
+                compileOptions {
+                    coreLibraryDesugaringEnabled true
+                    sourceCompatibility javaVersion
+                    targetCompatibility javaVersion
+                }
+                tasks.withType(KotlinCompile).configureEach {
+                    kotlinOptions {
+                        jvmTarget = javaVersion.toString()
+                    }
+                }
+                println("Setting java version to ${javaVersion.toString()} which is $javaVersion")
+                println("Setting compileSdkVersion and targetSdkVersion to $androidApiVersion")
+            }
+
+            dependencies {
+                coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+            }
+        }
+
+    }
+}
+
+subprojects {
+    project.evaluationDependsOn(':app')
 }
 
 tasks.register("clean", Delete) {

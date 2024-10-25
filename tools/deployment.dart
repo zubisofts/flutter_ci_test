@@ -9,12 +9,12 @@ import 'package:yaml/yaml.dart';
 import 'package:yaml_writer/yaml_writer.dart';
 import 'package:http/http.dart' as http;
 
-
 abstract class DeploymentTask {
   FutureOr<void> run();
 }
 
-const gitOpsApiUrl = 'https://api.github.com/repos/infostrategytech/mobile-gitops';
+const gitOpsApiUrl =
+    'https://api.github.com/repos/infostrategytech/mobile-gitops';
 final githubToken = 'Bearer ${Platform.environment['GITHUB_TOKEN']}';
 const dependenciesKey = 'dependencies';
 const dependenciesOverrideKey = 'dependency_overrides';
@@ -66,12 +66,12 @@ void main(List<String> args) async {
     case 'build':
       {
         return BuildCommand(
-            args: command!,
-            locale: locale,
-            environment: buildEnvironment,
-            configMap: (null != results[configKey])
-                ? jsonDecode(results[configKey])
-                : await fetchJsonFile(buildEnvironment, locale, gitRef))
+                args: command!,
+                locale: locale,
+                environment: buildEnvironment,
+                configMap: (null != results[configKey])
+                    ? jsonDecode(results[configKey])
+                    : await fetchJsonFile(buildEnvironment, locale, gitRef))
             .execute();
       }
     default:
@@ -268,10 +268,10 @@ class TagApplicationTask implements DeploymentTask {
 
   Future<String> getNextVersionNumber() async {
     final latestTag =
-    Process.runSync('git', ['describe', '--tags', '--abbrev=0'])
-        .stdout
-        .toString()
-        .trim();
+        Process.runSync('git', ['describe', '--tags', '--abbrev=0'])
+            .stdout
+            .toString()
+            .trim();
 
     var major = 0;
     var minor = 0;
@@ -279,9 +279,9 @@ class TagApplicationTask implements DeploymentTask {
 
     if (latestTag.isNotEmpty) {
       String version = RegExp(r'^v[0-9]+\.[0-9]+\.[0-9]+')
-          .firstMatch(latestTag)
-          ?.group(0)
-          ?.substring(1) ??
+              .firstMatch(latestTag)
+              ?.group(0)
+              ?.substring(1) ??
           '';
 
       List<String> versionArray = version.split('.');
@@ -322,8 +322,10 @@ class TagApplicationTask implements DeploymentTask {
       Process.runSync('git', ['push', 'origin', nextVersionNumber]);
       final urlPath =
           '$gitOpsApiUrl/tags?tag_name=$gitOpsTag&message=$locale&ref=$ref';
-      final response = await http
-          .post(Uri.parse(urlPath), headers: {'Authorization': githubToken,"Accept": "application/vnd.github+json"});
+      final response = await http.post(Uri.parse(urlPath), headers: {
+        'Authorization': githubToken,
+        "Accept": "application/vnd.github+json"
+      });
       final responseBody = jsonDecode(response.body);
       print("Response : $responseBody");
       print('TagApplicationTask: ${responseBody['name']}');
@@ -338,7 +340,7 @@ enum BuildEnvironment {
 
   factory BuildEnvironment.valueOf(String value) {
     return BuildEnvironment.values.firstWhere(
-          (element) => element.name.toLowerCase() == value.toLowerCase(),
+      (element) => element.name.toLowerCase() == value.toLowerCase(),
       orElse: () {
         return BuildEnvironment.dev;
       },
@@ -352,7 +354,7 @@ enum BuildType {
 
   factory BuildType.valueOf(String value) {
     return BuildType.values.firstWhere(
-          (element) => element.name.toLowerCase() == value.toLowerCase(),
+      (element) => element.name.toLowerCase() == value.toLowerCase(),
       orElse: () {
         return BuildType.local;
       },
@@ -370,13 +372,13 @@ Future<Process> runCommand(String executable, List<String> arguments,
     {Map<String, String>? environment}) async {
   final Completer<Process> completer = Completer();
   final result =
-  await Process.start(executable, arguments, environment: environment);
+      await Process.start(executable, arguments, environment: environment);
   result.stdout.listen((List<int> data) => print(String.fromCharCodes(data)),
       onDone: () {
-        completer.complete(result);
-      }, onError: (a) {
-        completer.completeError(a);
-      });
+    completer.complete(result);
+  }, onError: (a) {
+    completer.completeError(a);
+  });
   result.stderr.listen((List<int> data) => print(String.fromCharCodes(data)));
   return completer.future;
 }
@@ -386,8 +388,7 @@ Future<Map<String, dynamic>> fetchJsonFile(
     {String fileType = 'config'}) async {
   print('<====== Fetching $fileType from gitOps =====>');
   final filePath = '${environment.name}/$locale/$fileType.json';
-  final urlPath =
-      '$gitOpsApiUrl/contents/$filePath?ref=$ref';
+  final urlPath = '$gitOpsApiUrl/contents/$filePath?ref=$ref';
   print('GitOps URL : $urlPath');
   final response = await http.get(Uri.parse(urlPath), headers: {
     'Authorization': githubToken,
@@ -396,6 +397,15 @@ Future<Map<String, dynamic>> fetchJsonFile(
   final responseBody = jsonDecode(response.body);
   print('<====== Response of  $fileType from gitOps =====>');
   print('$responseBody');
-  final jsonContent = utf8.decode(base64.decode(responseBody['content']));
+  var content = responseBody['content'];
+  // Remove any extra newlines or spaces
+  content = content.replaceAll('\n', '').replaceAll(' ', '');
+
+  // Add padding if necessary
+  int remainder = content.length % 4;
+  if (remainder > 0) {
+    content = content.padRight(content.length + (4 - remainder), '=');
+  }
+  final jsonContent = utf8.decode(base64.decode(content));
   return (jsonContent.trim().isNotEmpty) ? jsonDecode(jsonContent) : {};
 }
